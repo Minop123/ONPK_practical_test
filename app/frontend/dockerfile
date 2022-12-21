@@ -1,0 +1,25 @@
+FROM node:12-alpine AS build
+RUN npm install yarn
+COPY . /frontend
+WORKDIR /frontend
+RUN yarn install
+RUN yarn build
+
+
+FROM nginx:stable-alpine
+COPY --from=build /frontend/build /usr/share/nginx/html
+COPY --from=build /frontend/env.sh /docker-entrypoint.d 
+COPY conf.d/default.conf /etc/nginx/conf.d
+EXPOSE 8080
+
+
+
+# Bonusové body: Zvážte použitie multi-stage build-u v Dockerfile
+#  Pre build použite node:12-alpine image a yarn
+#  Pre ďalší stage použite nginx:stable-alpine image
+#  Použite COPY --from=build /app/env.sh /docker entrypoint.d a taktiež COPY conf.d/default.conf 
+# /etc/nginx/conf.d
+#  Vytvorte tag s názvom latest
+
+
+

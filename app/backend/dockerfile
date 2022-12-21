@@ -1,0 +1,17 @@
+FROM  golang:alpine AS build
+WORKDIR /backend
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY main.go /backend
+
+RUN go build -o goapp .
+
+
+FROM  golang:alpine
+#RUN go build -v -o /ONPK/app/backend ./..
+WORKDIR /goapp
+COPY --from=build /backend/goapp ./
+#EXPOSE 8080
+#CMD ["app"]
+CMD ["./goapp"]
